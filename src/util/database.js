@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const env = require("../config/enviroment");
 
-console.log(env);
 const mongooseConnect = (callback) => {
   mongoose
     .connect(env.MONGODB_URI_SERVER)

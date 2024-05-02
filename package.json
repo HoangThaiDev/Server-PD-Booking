@@ -5,9 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/server.js",
-    "production": "cross-env BUILD_MODE=production node .src/server.js",
-    "dev": "cross-env BUILD_MODE=dev nodemon --exec babel-node ./src/server.js"
+    "start": "nodemon src/server.js"
+    
   },
   "author": "HoangThaiDev",
   "license": "ISC",
