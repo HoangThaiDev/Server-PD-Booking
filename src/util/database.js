@@ -1,13 +1,12 @@
 const mongoose = require("mongoose");
+const env = require("../config/enviroment");
 
-const URI_SERVER =
-  "mongodb+srv://thaindev2000:Cy1PJh5EDVq9W68t@cluster0.bqyvw4f.mongodb.net/my_system?retryWrites=true&w=majority&appName=Cluster0";
-
+console.log(env);
 const mongooseConnect = (callback) => {
   mongoose
-    .connect(URI_SERVER)
+    .connect(env.MONGODB_URI_SERVER)
     .then((result) => {
-      console.log("Connected to MongoDB successfully");
+      console.log(`Connected to server ${env.DATABASE_NAME} successfully`);
       callback();
     })
     .catch((err) => console.log(err));

@@ -1,9 +1,9 @@
 // import Modules
 const express = require("express");
 const cors = require("cors");
-// const mongoose = require("mongoose");
 const app = express();
 const mongooseConnect = require("./util/database");
+const env = require("./config/enviroment");
 
 const PORT = 5000;
 
@@ -21,7 +21,9 @@ app.use(cors());
 // Create Server DBS + Connect Server
 mongooseConnect(() => {
   app.listen(PORT, (err) => {
-    console.log("Start server with port 5000");
+    console.log(
+      `Hi ${env.AUTHOR} Start server with port ${env.LOCAL_APP_PORT}`
+    );
   });
 });
 
