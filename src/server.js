@@ -5,7 +5,7 @@ const app = express();
 const mongooseConnect = require("./util/database");
 const env = require("./config/enviroment");
 
-const PORT = 5000;
+const PORT = env.LOCAL_APP_PORT || 5000;
 
 // Import Router
 const cityRouter = require("./router/city");
