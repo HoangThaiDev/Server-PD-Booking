@@ -2,11 +2,11 @@ const { Schema, default: mongoose } = require("mongoose");
 
 const cartSchema = new Schema({
   user: {
-    userId: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: "User",
-    },
+    // userId: {
+    //   type: Schema.Types.ObjectId,
+    //   required: true,
+    //   ref: "User",
+    // },
     username: {
       type: String,
       required: true,
@@ -19,7 +19,16 @@ const cartSchema = new Schema({
           type: String,
           required: true,
         },
+
         name: {
+          type: String,
+          required: true,
+        },
+        photo: {
+          type: String,
+          required: true,
+        },
+        status: {
           type: String,
           required: true,
         },

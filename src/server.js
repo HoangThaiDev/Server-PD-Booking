@@ -5,8 +5,6 @@ const app = express();
 const mongooseConnect = require("./util/database");
 const env = require("./config/enviroment");
 
-const PORT = env.LOCAL_APP_PORT || 5000;
-
 // Import Router
 const cityRouter = require("./router/city");
 const resortRouter = require("./router/resort");
@@ -20,9 +18,9 @@ app.use(cors());
 
 // Create Server DBS + Connect Server
 mongooseConnect(() => {
-  app.listen(PORT, (err) => {
+  app.listen(env.LOCAL_APP_PORT, (err) => {
     console.log(
-      `Hi ${env.AUTHOR} Start server with port ${env.LOCAL_APP_PORT}`
+      `Hi ${env.AUTHOR}. Start server at host: ${env.LOCAL_APP_HOST} and port: ${env.LOCAL_APP_PORT}`
     );
   });
 });

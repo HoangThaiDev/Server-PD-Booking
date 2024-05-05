@@ -1,21 +1,37 @@
+// Import Modules
+const {
+  checkDateBookingInput,
+} = require("../middleware/cart/checkDateBookingInput");
+const { checkCartOfUser } = require("../middleware/cart/checkCartOfUser");
+
+// Import Models
 const Cart = require("../model/cart");
 
 exports.postAddCart = async (req, res) => {
-  const { valueFormBooking } = req.body;
-  const userNameClient = "bloodwind2";
+  const { valueFormBooking, user } = req.body;
 
-  const checkUserExistedInCart = await Cart.findOne({
-    "user.username": userNameClient,
-  });
-  console.log(checkUserExistedInCart);
+  const { conventStartDateInput, conventEndDateInput, isCheckDateInputValid } =
+    checkDateBookingInput(valueFormBooking.startDate, valueFormBooking.endDate);
 
-  // Check in collection Cart, user have cart ?
+  if (!isCheckDateInputValid) {
+    return false;
+  }
+
+  const checkUserExistedInCart = await checkCartOfUser(
+    conventStartDateInput,
+    conventEndDateInput,
+    user,
+    valueFormBooking,
+    res
+  );
+
+  // Nếu client chưa từng booking thì add mới vào cart
   if (!checkUserExistedInCart) {
     try {
       const cart = new Cart({
         user: {
-          userId: "6630ee9caf7ae4f3d4e3da33",
-          username: "bloodwind",
+          // userId: "6630ee9caf7ae4f3d4e3da33",
+          username: user,
         },
         cart: {
           items: [
@@ -49,28 +65,49 @@ exports.postAddCart = async (req, res) => {
 };
 
 exports.getCarts = async (req, res) => {
-  // try {
-  //   const carts = await Cart.find();
-  //   if (carts.length === 0) {
-  //     res.status(200).json([]);
-  //   }
-  //   res.status(200).json(carts);
-  // } catch (error) {
-  //   console.log(error);
-  // }
+  const { user, isLoggedIn } = req.body;
+
+  try {
+    if (!isLoggedIn) {
+      res.status(404).json({ message: "You need log in to get cart!" });
+      return false;
+    }
+    const cartUser = await Cart.findOne({ "user.username": user });
+
+    if (!cartUser) {
+      res.status(200).json({ user: user, items: [] });
+    }
+    res
+      .status(200)
+      .json({ user: cartUser.user.username, items: cartUser.cart.items });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 exports.deleteCart = async (req, res) => {
-  const { id } = req.body;
-  // try {
-  //   const response = await Cart.findByIdAndDelete(id);
-  //   if (!response) {
-  //     res.status(404).json({ error: "No Found Cart To Delete" });
-  //   }
+  const { id, user } = req.body;
+  try {
+    const cartOfUser = await Cart.findOne({ "user.username": user });
+    // Delete Item Of Cart By ID Item
+    const filteredItemCartById = cartOfUser.cart.items.filter(
+      (item) => item._id.toString() !== id
+    );
 
-  //   const carts = await Cart.find();
-  //   res.status(200).json(carts);
-  // } catch (error) {
-  //   console.log(error);
-  // }
+    // Check after time filter ==> Array null then delete Cart
+    if (filteredItemCartById.length === 0) {
+      await Cart.deleteOne({ "user.username": user });
+      res.status(200).json([]);
+      return false;
+    }
+
+    // Updated array item in cartOfUser
+    cartOfUser.cart.items = filteredItemCartById;
+    res.status(200).json(filteredItemCartById);
+
+    await cartOfUser.save();
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };
