@@ -2,7 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const mongooseConnect = require("./util/database");
+const mongooseConnect = require("./utils/database");
 const env = require("./config/enviroment");
 const { corsOptions } = require("./config/cors");
 

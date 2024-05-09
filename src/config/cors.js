@@ -1,5 +1,5 @@
 // Import Modules
-const { WHITELIST_DOMAINS } = require("../utils/constant");
+const { WHITELIST_DOMAINS } = require("../utils/constants");
 
 exports.corsOptions = {
   origin: function (origin, callback) {
