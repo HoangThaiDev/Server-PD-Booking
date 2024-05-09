@@ -1,2 +1,5 @@
 /** Những domain được phép truy cập tới tài nguyên của server */
-exports.WHITELIST_DOMAINS = ["https://paradise-booking.vercel.app/"];
+exports.WHITELIST_DOMAINS = [
+  "https://paradise-booking.vercel.app",
+  "http://localhost:3000",
+];
