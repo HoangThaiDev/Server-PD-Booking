@@ -1,2 +1,2 @@
-// const API_ROOT = "http://localhost:5000";
-export const API_ROOT = "https://server-pd-booking.onrender.com";
+/** Những domain được phép truy cập tới tài nguyên của server */
+exports.WHITELIST_DOMAINS = ["http://localhost:3000"];

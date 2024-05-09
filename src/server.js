@@ -4,6 +4,7 @@ const cors = require("cors");
 const app = express();
 const mongooseConnect = require("./util/database");
 const env = require("./config/enviroment");
+const { corsOptions } = require("./config/cors");
 
 // Import Router
 const cityRouter = require("./router/city");
@@ -14,7 +15,7 @@ const userRouter = require("./router/user");
 
 // Create Middlewares
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOptions));
 
 // Create Server DBS + Connect Server
 if (env.BUILD_MODE === "production") {
