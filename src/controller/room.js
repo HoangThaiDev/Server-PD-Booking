@@ -10,8 +10,6 @@ const { updatedRooms } = require("../middleware/room/updatedRoom");
 exports.getRooms = async (req, res) => {
   try {
     const rooms = await Room.find().lean();
-
-    // Check if collection empty return false
     if (rooms.length === 0) {
       res.status(404).json({ error: "No Found Room Data" });
     }

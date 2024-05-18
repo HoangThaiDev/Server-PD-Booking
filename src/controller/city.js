@@ -5,7 +5,7 @@ exports.getCities = async (req, res) => {
   try {
     const cities = await City.find();
     if (cities.length === 0) {
-      res.status(404).json({ error: "Internal Server Error" });
+      res.status(404).json({ error: "Not Found Cities" });
     }
     res.status(200).json(cities);
   } catch (error) {

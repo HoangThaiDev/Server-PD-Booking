@@ -5,6 +5,8 @@ const app = express();
 const mongooseConnect = require("./utils/database");
 const env = require("./config/enviroment");
 const { corsOptions } = require("./config/cors");
+const session = require("express-session");
+const MongoDBStore = require("connect-mongodb-session")(session);
 
 // Import Router
 const cityRouter = require("./router/city");
@@ -13,9 +15,27 @@ const roomRouter = require("./router/room");
 const cartRouter = require("./router/cart");
 const userRouter = require("./router/user");
 
+// Create store save session
+const store = new MongoDBStore({
+  uri: env.MONGODB_URI_SERVER,
+  collection: "sessions",
+});
+
 // Create Middlewares
 app.use(express.json());
 app.use(cors(corsOptions));
+app.use(
+  session({
+    secret: "my secret key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      maxAge: 5 * 60 * 1000,
+    },
+    store: store,
+  })
+);
 
 // Create Server DBS + Connect Server
 mongooseConnect(() => {

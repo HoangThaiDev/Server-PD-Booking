@@ -1,6 +1,8 @@
+// Import Modules
 const express = require("express");
 const roomController = require("../controller/room");
 
+// Import Controllers
 const router = express.Router();
 
 router.get("", roomController.getRooms);

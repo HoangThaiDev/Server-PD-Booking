@@ -7,7 +7,7 @@ exports.getResorts = async (req, res, next) => {
   try {
     const resorts = await Resort.find();
     if (resorts.length === 0) {
-      res.status(404).json({ error: "Internal Server Error" });
+      res.status(404).json({ error: "Not Found Resorts" });
     }
     res.status(200).json(resorts);
   } catch (error) {

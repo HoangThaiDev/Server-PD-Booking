@@ -3,6 +3,7 @@ const {
   checkDateBookingInput,
 } = require("../middleware/cart/checkDateBookingInput");
 const { checkCartOfUser } = require("../middleware/cart/checkCartOfUser");
+const mongoose = require("mongoose");
 
 // Import Models
 const Cart = require("../model/cart");
@@ -30,8 +31,8 @@ exports.postAddCart = async (req, res) => {
     try {
       const cart = new Cart({
         user: {
-          // userId: "6630ee9caf7ae4f3d4e3da33",
-          username: user,
+          userId: new mongoose.Types.ObjectId(user.userId),
+          username: user.username,
         },
         cart: {
           items: [
@@ -55,7 +56,7 @@ exports.postAddCart = async (req, res) => {
       });
       const response = await cart.save();
       if (response) {
-        res.status(200).json("Add To Cart Success!");
+        res.status(200).json({ message: "Add To Cart Success!" });
         return false;
       }
     } catch (err) {
@@ -65,46 +66,45 @@ exports.postAddCart = async (req, res) => {
 };
 
 exports.getCarts = async (req, res) => {
-  const { user, isLoggedIn } = req.body;
+  const { user } = req.body;
 
   try {
-    if (!isLoggedIn) {
-      res.status(404).json({ message: "You need log in to get cart!" });
+    if (!user) {
+      res.status(200).json({ items: [] });
       return false;
     }
-    const cartUser = await Cart.findOne({ "user.username": user });
 
-    if (!cartUser) {
-      res.status(200).json({ user: user, items: [] });
-    }
-    res
-      .status(200)
-      .json({ user: cartUser.user.username, items: cartUser.cart.items });
+    const cartUser = await Cart.findOne({
+      "user.userId": user.userId,
+    });
+
+    res.status(200).json({ items: cartUser.cart.items });
   } catch (error) {
     console.log(error);
   }
 };
 
 exports.deleteCart = async (req, res) => {
-  const { id, user } = req.body;
+  const { itemId, user } = req.body;
   try {
-    const cartOfUser = await Cart.findOne({ "user.username": user });
+    const cartOfUser = await Cart.findOne({
+      "user.userId": user.userId,
+    });
     // Delete Item Of Cart By ID Item
     const filteredItemCartById = cartOfUser.cart.items.filter(
-      (item) => item._id.toString() !== id
+      (item) => item._id.toString() !== itemId
     );
 
     // Check after time filter ==> Array null then delete Cart
     if (filteredItemCartById.length === 0) {
-      await Cart.deleteOne({ "user.username": user });
-      res.status(200).json([]);
+      await Cart.deleteOne({ "user.userId": user.userId });
+      res.status(200).json({ items: [] });
       return false;
     }
 
     // Updated array item in cartOfUser
     cartOfUser.cart.items = filteredItemCartById;
-    res.status(200).json(filteredItemCartById);
-
+    res.status(200).json({ items: filteredItemCartById });
     await cartOfUser.save();
   } catch (error) {
     console.log(error);
