@@ -56,31 +56,36 @@ exports.postAddCart = async (req, res) => {
       });
       const response = await cart.save();
       if (response) {
-        res.status(200).json({ message: "Add To Cart Success!" });
+        res.status(200).json({ message: "Add to Cart Success!" });
         return false;
       }
     } catch (err) {
       console.log(err);
+      res.status(404).json({
+        showErrorOfCart: true,
+        message: "Add to Cart Failled!",
+      });
     }
   }
 };
 
 exports.getCarts = async (req, res) => {
   const { user } = req.body;
+  if (user) {
+    try {
+      const cartUser = await Cart.findOne({
+        "user.userId": user.userId,
+      });
 
-  try {
-    if (!user) {
-      res.status(200).json({ items: [] });
-      return false;
+      if (!cartUser) {
+        res.status(200).json({ items: [] });
+        return false;
+      }
+
+      res.status(200).json({ items: cartUser.cart.items });
+    } catch (error) {
+      console.log(error);
     }
-
-    const cartUser = await Cart.findOne({
-      "user.userId": user.userId,
-    });
-
-    res.status(200).json({ items: cartUser.cart.items });
-  } catch (error) {
-    console.log(error);
   }
 };
 

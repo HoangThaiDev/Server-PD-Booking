@@ -42,9 +42,10 @@ exports.checkCartOfUser = async (
         });
 
         if (checkCondition) {
-          res
-            .status(404)
-            .json({ message: "Your room was booked. Please check your cart!" });
+          res.status(404).json({
+            showErrorOfCart: true,
+            message: "Your room was booked. Please check your cart!",
+          });
         } else {
           addNewItem(valueFormBooking, user, res);
         }

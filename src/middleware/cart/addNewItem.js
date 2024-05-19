@@ -32,6 +32,6 @@ exports.addNewItem = async (valueOfNewItem, user, res) => {
     res.status(200).json({ message: "Add to cart success!" });
     return checkUserExistedInCart.save();
   } catch (error) {
-    res.status(400).json({ message: "Add to cart failled!" });
+    res.status(400).json({ showError: false, message: "Add to cart failled!" });
   }
 };

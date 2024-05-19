@@ -13,30 +13,6 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  detail: {
-    firstName: {
-      type: String,
-    },
-    lastName: {
-      type: String,
-    },
-    country: {
-      type: String,
-    },
-    streetAddress: {
-      type: String,
-    },
-    phoneNumber: {
-      type: String,
-    },
-    emailContact: {
-      type: String,
-    },
-    orderNotes: {
-      type: String,
-    },
-    default: Object,
-  },
   createAt: {
     type: Date,
     default: Date.now,

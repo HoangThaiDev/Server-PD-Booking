@@ -1,5 +1,6 @@
 // Import Modules
 const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
 const {
   checkValidateFormRegister,
   checkValideFormLogin,
@@ -48,7 +49,10 @@ exports.postLoginUser = async (req, res) => {
 
   if (matchPassword) {
     req.session.isLoggedIn = true;
-    req.session.user = { userId: user._id, username: user.username };
+    req.session.user = {
+      userId: new mongoose.Types.ObjectId(user._id),
+      username: user.username,
+    };
     res.status(200).json({
       message: "Login Success!",
     });
@@ -98,4 +102,8 @@ exports.postRegisterUser = async (req, res) => {
   });
   res.status(200).json({ message: "Sign Up Success!" });
   return user.save();
+};
+
+exports.getUser = async (req, res) => {
+  console.log(req.params.userId);
 };
