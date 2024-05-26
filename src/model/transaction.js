@@ -1,6 +1,6 @@
 const { Schema, default: mongoose } = require("mongoose");
 
-const checkoutSchema = new Schema({
+const transactionSchema = new Schema({
   user: {
     userId: {
       type: Schema.Types.ObjectId,
@@ -13,30 +13,8 @@ const checkoutSchema = new Schema({
     },
   },
   infoUser: {
-    firstName: {
-      type: String,
-    },
-    lastName: {
-      type: String,
-    },
-    country: {
-      type: String,
-    },
-    streetAddress: {
-      type: String,
-    },
-    city: {
-      type: String,
-    },
-    phoneNumber: {
-      type: String,
-    },
-    emailContact: {
-      type: String,
-    },
-    noteOrder: {
-      type: String,
-    },
+    type: Object,
+    required: true,
   },
   cart: {
     items: {
@@ -55,4 +33,4 @@ const checkoutSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model("checkout", checkoutSchema);
+module.exports = mongoose.model("transaction", transactionSchema);

@@ -15,6 +15,9 @@ exports.postAddCart = async (req, res) => {
     checkDateBookingInput(valueFormBooking.startDate, valueFormBooking.endDate);
 
   if (!isCheckDateInputValid) {
+    res
+      .status(400)
+      .json({ session: false, message: "Choose date booking failled!" });
     return false;
   }
 

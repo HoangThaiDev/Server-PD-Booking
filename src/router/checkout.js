@@ -8,10 +8,12 @@ const checkoutController = require("../controller/checkout");
 
 router.post("/add-checkout", funcSession, checkoutController.postAddCheckout);
 
-router.post(
+router.get(
   "/get-checkout/:userId",
   funcSession,
   checkoutController.getCheckoutByUserId
 );
+
+router.post("/update", funcSession, checkoutController.postUpdateCheckout);
 
 module.exports = router;

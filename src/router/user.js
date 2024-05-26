@@ -12,6 +12,14 @@ router.post("/login", userController.postLoginUser);
 
 router.post("/register", userController.postRegisterUser);
 
-router.get("/get-user/:userId", functSession, userController.getUser);
+router.post("/updated/:userId", functSession, userController.postUpdateUser);
+
+router.post(
+  "/change-password/:userId",
+  functSession,
+  userController.postChangePassword
+);
+
+router.get("/logout/:userId", functSession, userController.getLogout);
 
 module.exports = router;

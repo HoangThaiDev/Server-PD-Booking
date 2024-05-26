@@ -15,6 +15,7 @@ const roomRouter = require("./router/room");
 const cartRouter = require("./router/cart");
 const userRouter = require("./router/user");
 const checkoutRouter = require("./router/checkout");
+const transactionRouter = require("./router/transaction");
 
 // Create store save session
 const store = new MongoDBStore({
@@ -32,7 +33,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      maxAge: 10 * 60 * 1000,
+      maxAge: 30 * 60 * 1000,
     },
     store: store,
   })
@@ -62,3 +63,4 @@ app.use("/resorts", resortRouter);
 app.use("/rooms", roomRouter);
 app.use("/carts", cartRouter);
 app.use("/checkouts", checkoutRouter);
+app.use("/transactions", transactionRouter);

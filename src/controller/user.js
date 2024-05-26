@@ -4,7 +4,11 @@ const mongoose = require("mongoose");
 const {
   checkValidateFormRegister,
   checkValideFormLogin,
+  checkValideFormUpdate,
+  checkValideFormChangePassword,
 } = require("../middleware/user/validation");
+// Import Models
+const Session = require("../model/session");
 
 // Import Models
 const User = require("../model/user");
@@ -16,6 +20,7 @@ exports.getLogin = async (req, res) => {
       user: {
         userId: req.session.user.userId,
         username: req.session.user.username,
+        detail: req.session.user.detail,
       },
     });
   } else {
@@ -27,11 +32,12 @@ exports.getLogin = async (req, res) => {
 
 exports.postLoginUser = async (req, res) => {
   const { email, password } = req.body.infoUserLogin;
-  const valueUserValid = checkValideFormLogin(email, password);
-  if (valueUserValid.length > 0) {
+
+  const valueUserInValid = checkValideFormLogin(email, password);
+  if (valueUserInValid.length > 0) {
     res.status(400).json({
-      message: undefined,
-      messages: valueUserValid,
+      session: false,
+      messages: valueUserInValid,
     });
     return false;
   }
@@ -52,28 +58,29 @@ exports.postLoginUser = async (req, res) => {
     req.session.user = {
       userId: new mongoose.Types.ObjectId(user._id),
       username: user.username,
+      detail: user.detail,
     };
     res.status(200).json({
       message: "Login Success!",
     });
   } else {
-    res.status(400).json({ message: "Login Failled!" });
+    res.status(400).json({ session: true, message: "Login Failled!" });
   }
 };
 
 exports.postRegisterUser = async (req, res) => {
   const { username, email, password, confirmPassword } =
     req.body.infoUserRegister;
-  const valueUserValid = checkValidateFormRegister(
+  const valueUserInValid = checkValidateFormRegister(
     username,
     email,
     password,
     confirmPassword
   );
-  if (valueUserValid.length > 0) {
+  if (valueUserInValid.length > 0) {
     res.status(400).json({
-      message: undefined,
-      messages: valueUserValid,
+      session: false,
+      messages: valueUserInValid,
     });
     return false;
   }
@@ -104,6 +111,86 @@ exports.postRegisterUser = async (req, res) => {
   return user.save();
 };
 
-exports.getUser = async (req, res) => {
-  console.log(req.params.userId);
+exports.postUpdateUser = async (req, res) => {
+  const { userId } = req.params;
+  const { valueFormUpdateUser } = req.body;
+
+  const valueUserInValid = checkValideFormUpdate(valueFormUpdateUser);
+
+  if (valueUserInValid.length > 0) {
+    res.status(400).json({
+      session: false,
+      messages: valueUserInValid,
+    });
+    return false;
+  }
+
+  try {
+    const user = await User.findByIdAndUpdate(userId, {
+      "detail.firstname": valueFormUpdateUser.firstname,
+      "detail.lastname": valueFormUpdateUser.lastname,
+      "detail.country": valueFormUpdateUser.country,
+      "detail.streetAddress": valueFormUpdateUser.address,
+      "detail.city": valueFormUpdateUser.city,
+      "detail.phoneNumber": valueFormUpdateUser.phone,
+    });
+
+    if (user) {
+      res.status(200).json({ message: "Update User Success!" });
+      return false;
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: "Update User Failled!" });
+  }
+};
+
+exports.getLogout = async (req, res) => {
+  const { userId } = req.params;
+
+  // Lấy thông tin session từ MongoDB
+  const session = await Session.findOneAndDelete({
+    "session.user.userId": new mongoose.Types.ObjectId(userId),
+  });
+  if (session) {
+    res.status(200).json({ message: "Logout Success!" });
+  }
+};
+
+exports.postChangePassword = async (req, res) => {
+  const { userId } = req.params;
+  const { valueFormUpdateUser } = req.body;
+
+  // Check validate value form client
+  const valueUserInValid = checkValideFormChangePassword(valueFormUpdateUser);
+
+  if (valueUserInValid.length > 0) {
+    res.status(400).json({
+      session: false,
+      messages: valueUserInValid,
+    });
+    return false;
+  }
+
+  // Find User By Id in Dbs
+
+  const findUser = await User.findById(userId);
+  const matchedPassword = await bcrypt.compare(
+    valueFormUpdateUser.passwordCurrent,
+    findUser.password
+  );
+
+  // Check value password compare with password of user in dbs
+  if (!matchedPassword) {
+    res
+      .status(400)
+      .json({ session: false, message: "Password current is wrong!" });
+    return false;
+  }
+
+  // Update field password in dbs
+  findUser.password = await bcrypt.hash(valueFormUpdateUser.newPassword, 12);
+  findUser.save();
+  res.status(200).json({ message: "Change password is Success!" });
+  return false;
 };
