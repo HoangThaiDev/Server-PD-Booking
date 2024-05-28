@@ -34,6 +34,8 @@ app.use(
     cookie: {
       httpOnly: true,
       maxAge: 30 * 60 * 1000,
+      sameSite: "None",
+      secure: env.BUILD_MODE === "production", // Chỉ secure khi ở production
     },
     store: store,
   })
