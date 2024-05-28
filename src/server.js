@@ -22,7 +22,7 @@ const store = new MongoDBStore({
   uri: env.MONGODB_URI_SERVER,
   collection: "sessions",
 });
-
+console.log(env.BUILD_MODE);
 // Create Middlewares
 app.use(express.json());
 app.use(cors(corsOptions));
@@ -34,8 +34,8 @@ app.use(
     cookie: {
       httpOnly: true,
       maxAge: 30 * 60 * 1000,
-      sameSite: "None",
-      secure: env.BUILD_MODE === "production", // Chỉ secure khi ở production
+      sameSite: env.BUILD_MODE === "production" ? "strict" : "lax",
+      secure: env.BUILD_MODE === "production",
     },
     store: store,
   })
