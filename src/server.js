@@ -22,7 +22,7 @@ const store = new MongoDBStore({
   uri: env.MONGODB_URI_SERVER,
   collection: "sessions",
 });
-console.log(env.BUILD_MODE);
+
 // Create Middlewares
 app.use(express.json());
 app.use(cors(corsOptions));

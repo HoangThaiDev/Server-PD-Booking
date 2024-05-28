@@ -15,11 +15,6 @@ const User = require("../model/user");
 
 exports.getLogin = async (req, res) => {
   if (req.session.isLoggedIn) {
-    console.log(
-      "user controller login: ",
-      req.session.isLoggedIn,
-      req.session.user
-    );
     res.status(200).json({
       isLoggedIn: req.session.isLoggedIn,
       user: {
