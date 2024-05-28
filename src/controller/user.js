@@ -36,7 +36,7 @@ exports.postLoginUser = async (req, res) => {
   const valueUserInValid = checkValideFormLogin(email, password);
   if (valueUserInValid.length > 0) {
     res.status(400).json({
-      session: false,
+      checkValidateForm: true,
       messages: valueUserInValid,
     });
     return false;
@@ -64,7 +64,7 @@ exports.postLoginUser = async (req, res) => {
       message: "Login Success!",
     });
   } else {
-    res.status(400).json({ session: true, message: "Login Failled!" });
+    res.status(400).json({ message: "Login Failled!" });
   }
 };
 
@@ -79,7 +79,7 @@ exports.postRegisterUser = async (req, res) => {
   );
   if (valueUserInValid.length > 0) {
     res.status(400).json({
-      session: false,
+      checkValidateForm: true,
       messages: valueUserInValid,
     });
     return false;
