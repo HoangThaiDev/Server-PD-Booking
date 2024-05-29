@@ -37,8 +37,8 @@ app.use(
     cookie: {
       httpOnly: true,
       maxAge: 30 * 60 * 1000,
-      sameSite: "none",
-      secure: true, //env.BUILD_MODE === "production",
+      sameSite: env.BUILD_MODE === "production" ? "none" : "lax",
+      secure: env.BUILD_MODE === "production",
     },
   })
 );
