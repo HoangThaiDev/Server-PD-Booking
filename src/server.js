@@ -26,18 +26,20 @@ const store = new MongoDBStore({
 // Create Middlewares
 app.use(express.json());
 app.use(cors(corsOptions));
+app.set("trust proxy", 1);
+
 app.use(
   session({
     secret: "my secret key",
     resave: false,
     saveUninitialized: false,
+    store: store,
     cookie: {
       httpOnly: true,
       maxAge: 30 * 60 * 1000,
-      sameSite: env.BUILD_MODE === "production" ? "strict" : "lax",
-      secure: env.BUILD_MODE === "production",
+      sameSite: "none",
+      secure: true, //env.BUILD_MODE === "production",
     },
-    store: store,
   })
 );
 
@@ -52,7 +54,7 @@ mongooseConnect(() => {
   } else {
     app.listen(env.LOCAL_APP_PORT, (err) => {
       console.log(
-        `LocalDev: Hi ${env.AUTHOR}. Start server at host: ${env.LOCAL_APP_HOST} and port: ${env.LOCAL_APP_PORT}`
+        `Localdev: Hi ${env.AUTHOR}. Start server at host: ${env.LOCAL_APP_HOST} and port: ${env.LOCAL_APP_PORT}`
       );
     });
   }
