@@ -14,21 +14,20 @@ const Session = require("../model/session");
 const User = require("../model/user");
 
 exports.getLogin = async (req, res) => {
-  // if (req.session.isLoggedIn) {
-  //   res.status(200).json({
-  //     isLoggedIn: req.session.isLoggedIn,
-  //     user: {
-  //       userId: req.session.user.userId,
-  //       username: req.session.user.username,
-  //       detail: req.session.user.detail,
-  //     },
-  //   });
-  // } else {
-  //   req.session.destroy(() => {
-  //     res.status(203).json({ isLoggedIn: false });
-  //   });
-  // }
-  res.status(200).json({ message: "hello" });
+  if (req.session.isLoggedIn) {
+    res.status(200).json({
+      isLoggedIn: req.session.isLoggedIn,
+      user: {
+        userId: req.session.user.userId,
+        username: req.session.user.username,
+        detail: req.session.user.detail,
+      },
+    });
+  } else {
+    req.session.destroy(() => {
+      res.status(203).json({ isLoggedIn: false });
+    });
+  }
 };
 
 exports.postLoginUser = async (req, res) => {
