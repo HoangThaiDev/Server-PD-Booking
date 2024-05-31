@@ -69,12 +69,6 @@ exports.postSearchRoom = async (req, res) => {
 exports.postFindRoom = async (req, res) => {
   let updatedDataRooms = [];
   const { nameCity, options, dateBooking } = req.body;
-  const convertNameCity = nameCity
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/đ/g, "d")
-    .replace(/Đ/g, "D")
-    .toLowerCase();
 
   // Check all value is empty or not
   const checkValueInputEmpty =
@@ -96,7 +90,7 @@ exports.postFindRoom = async (req, res) => {
   }
 
   if (nameCity.length > 0) {
-    const filteredRoomByNameCity = await findRoomByNameCity(convertNameCity);
+    const filteredRoomByNameCity = await findRoomByNameCity(nameCity);
 
     if (!filteredRoomByNameCity) {
       res.status(404).json({ message: "No Found City With Your City Choice!" });

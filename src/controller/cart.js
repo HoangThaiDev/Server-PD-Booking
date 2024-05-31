@@ -63,7 +63,6 @@ exports.postAddCart = async (req, res) => {
         return false;
       }
     } catch (err) {
-      console.log(err);
       res.status(404).json({
         showErrorOfCart: true,
         message: "Add to Cart Failled!",

@@ -48,15 +48,7 @@ exports.findRoomByNameCity = async (nameCity) => {
   // Find rooms by name-city value
   try {
     const cities = await City.find();
-    const findedCity = cities.find(
-      (city) =>
-        city.name
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .replace(/đ/g, "d")
-          .replace(/Đ/g, "D")
-          .toLowerCase() === nameCity
-    );
+    const findedCity = cities.find((city) => city.name === nameCity);
     if (!findedCity) {
       return false;
     }

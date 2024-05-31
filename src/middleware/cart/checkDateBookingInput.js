@@ -15,11 +15,11 @@ exports.checkDateBookingInput = (startDate, endDate) => {
     conventStartDateInput,
     "day"
   );
-  console.log(checkStartDateInputValid, checkEndDateInputValid);
+
   // Kiểm tra ngày nhập từ client hợp lệ
   if (!checkStartDateInputValid || !checkEndDateInputValid) {
     isCheckDateInputValid = false;
   }
-  console.log(isCheckDateInputValid);
+
   return { conventStartDateInput, conventEndDateInput, isCheckDateInputValid };
 };

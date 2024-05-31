@@ -12,4 +12,22 @@ router.get(
   transactionController.getTransactionByUserId
 );
 
+router.get(
+  "/detail/:transactionId",
+  funcSession,
+  transactionController.getDetailTransaction
+);
+
+router.delete(
+  "/detail/:transactionId",
+  funcSession,
+  transactionController.deleteDetailTransaction
+);
+
+router.post(
+  "/delete-item/:itemId",
+  funcSession,
+  transactionController.getDeleteItemTrans
+);
+
 module.exports = router;

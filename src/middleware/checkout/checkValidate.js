@@ -44,10 +44,14 @@ exports.checkValidateFormCheckout = (valuesFormClient) => {
     phone: JOI.string()
       .trim()
       .regex(/^[0-9\s]+$/)
+      .min(10)
+      .max(10)
       .required()
       .messages({
-        "string.empty": "PhoneNumber is not allowed to be empty!",
+        "string.empty": "Phone number is not allowed to be empty!",
         "string.pattern.base": "Phone must be a number!",
+        "string.min": "Phone number length must be at 10 characters long!",
+        "string.max": "Phone number length must be at 10 characters long!",
       }),
     email: JOI.string()
       .trim()

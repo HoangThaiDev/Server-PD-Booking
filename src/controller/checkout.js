@@ -61,7 +61,7 @@ exports.postUpdateCheckout = async (req, res) => {
   const valueUserInValid = checkValidateFormCheckout(valuesFormClient);
   if (valueUserInValid.length > 0) {
     res.status(400).json({
-      message: undefined,
+      checkValidateForm: true,
       messages: valueUserInValid,
     });
     return false;
@@ -112,7 +112,6 @@ exports.postUpdateCheckout = async (req, res) => {
       "user.userId": user.userId,
     });
   } catch (error) {
-    console.log(error);
     res.status(400).json({ message: "Updated Your Checkout Failled!" });
   }
 };
