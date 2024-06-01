@@ -3,9 +3,11 @@ const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const {
   checkValidateFormRegister,
-  checkValideFormLogin,
-  checkValideFormUpdate,
-  checkValideFormChangePassword,
+  checkValidateFormLogin,
+  checkValidateFormUpdate,
+  checkValidateFormChangePassword,
+  checkValidateFormForgotPassword,
+  checkValidateFormCreateNewPassword,
 } = require("../middleware/user/validation");
 // Import Models
 const Session = require("../model/session");
@@ -33,7 +35,7 @@ exports.getLogin = async (req, res) => {
 exports.postLoginUser = async (req, res) => {
   const { email, password } = req.body.infoUserLogin;
 
-  const valueUserInValid = checkValideFormLogin(email, password);
+  const valueUserInValid = checkValidateFormLogin(email, password);
   if (valueUserInValid.length > 0) {
     res.status(400).json({
       checkValidateForm: true,
@@ -115,11 +117,11 @@ exports.postUpdateUser = async (req, res) => {
   const { userId } = req.params;
   const { valueFormUpdateUser } = req.body;
 
-  const valueUserInValid = checkValideFormUpdate(valueFormUpdateUser);
+  const valueUserInValid = checkValidateFormUpdate(valueFormUpdateUser);
 
   if (valueUserInValid.length > 0) {
     res.status(400).json({
-      session: false,
+      checkValidateForm: true,
       messages: valueUserInValid,
     });
     return false;
@@ -162,18 +164,17 @@ exports.postChangePassword = async (req, res) => {
   const { valueFormUpdateUser } = req.body;
 
   // Check validate value form client
-  const valueUserInValid = checkValideFormChangePassword(valueFormUpdateUser);
+  const valueUserInValid = checkValidateFormChangePassword(valueFormUpdateUser);
 
   if (valueUserInValid.length > 0) {
     res.status(400).json({
-      session: false,
+      checkValidateForm: true,
       messages: valueUserInValid,
     });
     return false;
   }
 
   // Find User By Id in Dbs
-
   const findUser = await User.findById(userId);
   const matchedPassword = await bcrypt.compare(
     valueFormUpdateUser.passwordCurrent,
@@ -193,4 +194,60 @@ exports.postChangePassword = async (req, res) => {
   findUser.save();
   res.status(200).json({ message: "Change password is Success!" });
   return false;
+};
+
+exports.postAuthEmail = async (req, res) => {
+  const { email } = req.body.infoUser;
+
+  // Check validate value form client
+  const valueUserInValid = checkValidateFormForgotPassword(email);
+
+  if (valueUserInValid.length > 0) {
+    res.status(400).json({
+      checkValidateForm: true,
+      messages: valueUserInValid,
+    });
+    return false;
+  }
+
+  const findedUser = await User.findOne({ email: email });
+
+  if (!findedUser) {
+    res.status(400).json({ message: "Your Email is incorrect!" });
+    return false;
+  }
+  res
+    .status(200)
+    .json({ userId: findedUser._id, message: "Your Email is correct!" });
+};
+
+exports.postCreateNewPassword = async (req, res) => {
+  const { userId, password, confirmPassword } = req.body.infoUser;
+
+  // Check validate value form client
+  const valueUserInValid = checkValidateFormCreateNewPassword(
+    password,
+    confirmPassword
+  );
+
+  if (valueUserInValid.length > 0) {
+    res.status(400).json({
+      checkValidateForm: true,
+      messages: valueUserInValid,
+    });
+    return false;
+  }
+
+  const passwordHash = await bcrypt.hash(password, 12);
+
+  const user = await User.findByIdAndUpdate(
+    { _id: userId },
+    { password: passwordHash }
+  );
+
+  if (!user) {
+    res.status(400).json({ message: "Create new password is failled!" });
+    return false;
+  }
+  res.status(200).json({ message: "Create new password is success!" });
 };

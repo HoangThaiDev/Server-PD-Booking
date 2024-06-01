@@ -20,6 +20,10 @@ router.post(
   userController.postChangePassword
 );
 
+router.post("/auth-email", userController.postAuthEmail);
+
+router.post("/create-newPassword", userController.postCreateNewPassword);
+
 router.get("/logout/:userId", functSession, userController.getLogout);
 
 module.exports = router;

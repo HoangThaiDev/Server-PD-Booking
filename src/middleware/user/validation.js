@@ -66,7 +66,7 @@ exports.checkValidateFormRegister = (
   return true;
 };
 
-exports.checkValideFormLogin = (email, password) => {
+exports.checkValidateFormLogin = (email, password) => {
   const userSchema = Joi.object({
     email: Joi.string()
       .email({
@@ -106,7 +106,7 @@ exports.checkValideFormLogin = (email, password) => {
   return true;
 };
 
-exports.checkValideFormUpdate = (valueFormUpdateUser) => {
+exports.checkValidateFormUpdate = (valueFormUpdateUser) => {
   const userSchema = Joi.object({
     firstname: Joi.string()
       .trim()
@@ -179,7 +179,7 @@ exports.checkValideFormUpdate = (valueFormUpdateUser) => {
   return true;
 };
 
-exports.checkValideFormChangePassword = (valueFormUpdateUser) => {
+exports.checkValidateFormChangePassword = (valueFormUpdateUser) => {
   const userSchema = Joi.object({
     passwordCurrent: Joi.string()
       .trim()
@@ -213,6 +213,78 @@ exports.checkValideFormChangePassword = (valueFormUpdateUser) => {
       passwordCurrent: valueFormUpdateUser.passwordCurrent,
       newPassword: valueFormUpdateUser.newPassword,
       confirmNewPassword: valueFormUpdateUser.confirmNewPassword,
+    },
+    { abortEarly: false } // Tiếp tục kiểm tra lỗi chứ ko có dừng sau khi tìm thấy
+  );
+
+  if (error) {
+    // Return an array of all error messages
+    const errorMessages = error.details.map((detail) => ({
+      path: detail.path,
+      message: detail.message,
+      showError: true,
+      type: detail.type,
+    }));
+    return errorMessages;
+  }
+  return true;
+};
+
+exports.checkValidateFormForgotPassword = (email) => {
+  const userSchema = Joi.object({
+    email: Joi.string()
+      .email({
+        tlds: { allow: ["com", "vn", "net"] },
+      })
+      .required()
+      .messages({
+        "string.empty": "Email is not allowed to be empty!",
+        "string.email": "Email must be a valid email!",
+      }),
+  });
+
+  // Dữ liệu form và lấy lỗi nếu có
+  const { error } = userSchema.validate(
+    {
+      email: email,
+    },
+    { abortEarly: false } // Tiếp tục kiểm tra lỗi chứ ko có dừng sau khi tìm thấy
+  );
+
+  if (error) {
+    // Return an array of all error messages
+    const errorMessages = error.details.map((detail) => ({
+      path: detail.path,
+      message: detail.message,
+      showError: true,
+      type: detail.type,
+    }));
+    return errorMessages;
+  }
+  return true;
+};
+
+exports.checkValidateFormCreateNewPassword = (password, confirmPassword) => {
+  const userSchema = Joi.object({
+    password: Joi.string()
+      .trim()
+      .min(5)
+      .regex(/^[a-zA-Z0-9\s]+$/)
+      .required()
+      .messages({
+        "string.empty": "Password is not allowed to be empty!",
+        "string.min": "Password length must be at least 5 characters long!",
+      }),
+    confirmPassword: Joi.any().valid(Joi.ref("password")).required().messages({
+      "any.only": "Password must match!",
+    }),
+  });
+
+  // Dữ liệu form và lấy lỗi nếu có
+  const { error } = userSchema.validate(
+    {
+      password: password,
+      confirmPassword: confirmPassword,
     },
     { abortEarly: false } // Tiếp tục kiểm tra lỗi chứ ko có dừng sau khi tìm thấy
   );
