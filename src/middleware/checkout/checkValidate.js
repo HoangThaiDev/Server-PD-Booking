@@ -8,24 +8,27 @@ exports.checkValidateFormCheckout = (valuesFormClient) => {
   const clientSchema = JOI.object({
     firstName: JOI.string()
       .trim()
-      .regex(/^[a-zA-Z0-9\s]+$/)
+      .regex(/^[a-zA-Z\s]+$/)
       .required()
       .messages({
         "string.empty": "Firstname is not allowed to be empty!",
+        "string.pattern.base": "Firstname must be a text!",
       }),
     lastName: JOI.string()
       .trim()
-      .regex(/^[a-zA-Z0-9\s]+$/)
+      .regex(/^[a-zA-Z\s]+$/)
       .required()
       .messages({
         "string.empty": "Lastname is not allowed to be empty!",
+        "string.pattern.base": "Lastname must be a text!",
       }),
     country: JOI.string()
       .trim()
-      .regex(/^[a-zA-Z0-9\s]+$/)
+      .regex(/^[a-zA-Z\s]+$/)
       .required()
       .messages({
         "string.empty": "Country is not allowed to be empty!",
+        "string.pattern.base": "Country must be a text!",
       }),
     address: JOI.string()
       .trim()
@@ -36,10 +39,11 @@ exports.checkValidateFormCheckout = (valuesFormClient) => {
       }),
     city: JOI.string()
       .trim()
-      .regex(/^[a-zA-Z0-9\s]+$/)
+      .regex(/^[a-zA-Z\s]+$/)
       .required()
       .messages({
         "string.empty": "City is not allowed to be empty!",
+        "string.pattern.base": "City must be a text!",
       }),
     phone: JOI.string()
       .trim()
