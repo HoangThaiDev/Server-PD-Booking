@@ -1,7 +1,7 @@
 const City = require("../../model/city");
 const Resort = require("../../model/resort");
 
-exports.updatedRooms = async (rooms, nameCity) => {
+exports.updatedFieldRooms = async (rooms) => {
   try {
     const resorts = await Resort.find();
     const cities = await City.find();

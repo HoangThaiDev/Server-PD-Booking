@@ -1,5 +1,7 @@
 // Import Modules
 const bcrypt = require("bcrypt");
+
+// Import Middlewares
 const mongoose = require("mongoose");
 const {
   checkValidateFormRegister,
@@ -9,10 +11,9 @@ const {
   checkValidateFormForgotPassword,
   checkValidateFormCreateNewPassword,
 } = require("../middleware/user/validation");
-// Import Models
-const Session = require("../model/session");
 
 // Import Models
+const Session = require("../model/session");
 const User = require("../model/user");
 
 exports.getLogin = async (req, res) => {

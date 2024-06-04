@@ -7,10 +7,12 @@ const router = express.Router();
 
 router.get("", roomController.getRooms);
 
-router.get("/detail/:roomId", roomController.getDetailRoom);
+router.get("/detail", roomController.getDetailRoom);
 
 router.post("/search", roomController.postSearchRoom);
 
 router.post("/find-room", roomController.postFindRoom);
+
+router.post("/check", roomController.postCheckRoom);
 
 module.exports = router;

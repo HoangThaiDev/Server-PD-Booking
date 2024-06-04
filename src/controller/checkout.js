@@ -1,4 +1,7 @@
 // Import Modules
+const { default: mongoose } = require("mongoose");
+
+// Import Middleware
 const {
   checkValidateFormCheckout,
 } = require("../middleware/checkout/checkValidate");
@@ -7,7 +10,6 @@ const {
 const Checkout = require("../model/checkout");
 const Cart = require("../model/cart");
 const Transaction = require("../model/transaction");
-const { default: mongoose } = require("mongoose");
 
 exports.postAddCheckout = async (req, res) => {
   const { carts, user, totalPriceCarts } = req.body;

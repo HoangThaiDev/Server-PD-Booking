@@ -28,6 +28,8 @@ exports.addNewItem = async (valueOfNewItem, user, res) => {
       },
       priceRoom: valueOfNewItem.price,
       totalPrice: valueOfNewItem.totalPrice,
+      nameCity: valueOfNewItem.nameCity,
+      nameResort: valueOfNewItem.nameResort,
     });
     res.status(200).json({ message: "Add to cart success!" });
     return checkUserExistedInCart.save();

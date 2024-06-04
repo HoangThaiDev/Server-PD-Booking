@@ -24,6 +24,14 @@ const cartSchema = new Schema({
           type: String,
           required: true,
         },
+        nameCity: {
+          type: String,
+          required: true,
+        },
+        nameResort: {
+          type: String,
+          required: true,
+        },
         photo: {
           type: String,
           required: true,

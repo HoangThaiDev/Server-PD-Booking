@@ -1,16 +1,18 @@
 // Import Modules
+const mongoose = require("mongoose");
+
+// Import Middleware
 const {
   checkDateBookingInput,
 } = require("../middleware/cart/checkDateBookingInput");
 const { checkCartOfUser } = require("../middleware/cart/checkCartOfUser");
-const mongoose = require("mongoose");
 
 // Import Models
 const Cart = require("../model/cart");
 
 exports.postAddCart = async (req, res) => {
   const { valueFormBooking, user } = req.body;
-
+  console.log("valueFormBooking", valueFormBooking);
   const { conventStartDateInput, conventEndDateInput, isCheckDateInputValid } =
     checkDateBookingInput(valueFormBooking.startDate, valueFormBooking.endDate);
 
@@ -53,6 +55,8 @@ exports.postAddCart = async (req, res) => {
               totalPrice: valueFormBooking.totalPrice,
               services: valueFormBooking.serviceOptions,
               status: valueFormBooking.status,
+              nameCity: valueFormBooking.nameCity,
+              nameResort: valueFormBooking.nameResort,
             },
           ],
         },

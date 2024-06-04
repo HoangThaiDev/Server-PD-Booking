@@ -67,9 +67,15 @@ exports.postSearchResort = async (req, res) => {
         .toLowerCase()
         .includes(nameValueInput)
     );
+    if (filteredResortByName.length === 0) {
+      res
+        .status(400)
+        .json({ message: "No found resort with your name choice!" });
+      return false;
+    }
     res.status(200).json(filteredResortByName);
   } catch (error) {
-    console.log(error);
+    res.status(400).json({ message: "Internal Server Error" });
   }
 };
 

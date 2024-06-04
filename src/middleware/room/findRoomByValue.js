@@ -1,7 +1,14 @@
+// Import Modules
+const moment = require("moment");
+
+// Import Models
 const Room = require("../../model/room");
 const City = require("../../model/city");
 const Resort = require("../../model/resort");
-const { updatedRooms } = require("../../middleware/room/updatedRoom");
+const Transaction = require("../../model/transaction");
+
+// Import Middlewares
+const { updatedFieldRooms } = require("../../middleware/room/updatedRoom");
 
 exports.findRoomsNoOptions = async () => {
   let newDataRooms = [];
@@ -64,7 +71,7 @@ exports.findRoomByNameCity = async (nameCity) => {
     // Find Rooms by roomIds filtered
     const rooms = await Room.find({ _id: { $in: roomIds } }).lean();
 
-    // Updated Key For Rooms
+    // Updated Field For Rooms
     rooms.forEach((room) => {
       room.nameCity = findedCity.name;
       resorts.forEach((resort) => {
@@ -84,37 +91,27 @@ exports.findRoomByNameCity = async (nameCity) => {
   return newDataRooms;
 };
 
-exports.findRoomByOptions = async (options, updatedDataRooms = []) => {
+exports.findRoomByOptions = async (options, updatedDataRooms) => {
   let newDataRooms = [];
   const totalPeople = options.adults + options.children;
 
   try {
     // Check room filtered by value City
     if (updatedDataRooms.length === 0) {
-      const filteredRooms = await Room.aggregate([
-        {
-          $match: {
-            "detail.maxPeople": { $gte: totalPeople },
-          },
-        },
-        {
-          $addFields: {
-            totalRooms: { $size: "$numberRooms" },
-          },
-        },
-        {
-          $match: {
-            totalRooms: { $gte: options.rooms },
-          },
-        },
-      ]);
-      return await updatedRooms(filteredRooms);
+      const rooms = await Room.find().lean();
+      const filteredRooms = rooms.filter(
+        (room) =>
+          room.numberRooms.length >= options.rooms &&
+          room.detail.maxPeople * options.rooms >= totalPeople
+      );
+
+      return await updatedFieldRooms(filteredRooms);
     }
 
     newDataRooms = updatedDataRooms.filter(
       (room) =>
         room.numberRooms.length >= options.rooms &&
-        room.detail.maxPeople >= totalPeople
+        room.detail.maxPeople * options.rooms >= totalPeople
     );
   } catch (error) {
     console.log(error);
@@ -123,4 +120,76 @@ exports.findRoomByOptions = async (options, updatedDataRooms = []) => {
   return newDataRooms;
 };
 
-exports.findRoomByDateString = (req, res) => {};
+exports.findRoomByDateBooking = async (
+  conventStartDateInput,
+  conventEndDateInput,
+  updatedDataRooms
+) => {
+  let newDataRooms = [];
+
+  // Lọc những transaction có các room đã booking trước
+  const transactions = await Transaction.find();
+  const rooms = await Room.find().lean();
+  const consolidatedItems = transactions.flatMap((tr) => tr.cart.items);
+
+  const filteredItemsByDBooking = consolidatedItems.filter((item) => {
+    const convertStartDateOfItem = moment(
+      item.date.startDate,
+      "DD/MM/YYYY"
+    ).startOf("day");
+    const convertEndDateOfItem = moment(
+      item.date.endDate,
+      "DD/MM/YYYY"
+    ).startOf("day");
+
+    // -----------------------------------------------------------------------------------------
+    // Kiểm tra xem client nhập date booking có trùng với các item đã booking trước ko
+    const isCheckItemInvalid =
+      conventStartDateInput.isBefore(convertEndDateOfItem, "day") &&
+      conventEndDateInput.isAfter(convertStartDateOfItem, "day");
+
+    // Nếu có thì lọc ra để cập nhật
+    if (isCheckItemInvalid) {
+      return item;
+    }
+  });
+
+  // -----------------------------------------------------------------------------------------
+  // Kiểm tra nếu arr vừa lọc ko có giá trị thì return toàn bộ Resort
+  if (filteredItemsByDBooking.length === 0) {
+    // Kiểm tra rooms đã được lọc qua 2 điều kiện nameCity và options chưa
+    if (updatedDataRooms.length === 0) {
+      const modifiedRooms = await updatedFieldRooms(rooms);
+      return modifiedRooms;
+    } else {
+      return updatedDataRooms;
+    }
+  }
+
+  // -------------------------------------------------------------------
+  // Kiểm tra nếu arr vừa lọc có giá trị thì bắt đầu xét điều kiện
+  // Kiểm tra rooms được lọc qua 2 điều kiện nameCity và options chưa
+  if (updatedDataRooms.length === 0) {
+    newDataRooms = await updatedFieldRooms(rooms);
+  } else {
+    newDataRooms = updatedDataRooms;
+  }
+  // Tìm kiếm các loại phòng đã full trong arr transaction đã lọc
+  const findRoomsFull = newDataRooms
+    .map((room) => {
+      const matchingRoomItem = filteredItemsByDBooking.find(
+        (roomItem) =>
+          room._id.toString() === roomItem.roomId &&
+          room.numberRooms.length === roomItem.rooms.length
+      );
+      return matchingRoomItem;
+    })
+    .filter((item) => item !== undefined);
+
+  // Cập nhật arr room tổng để loại bỏ những loại phòng full từ findRoomsFull
+  const filteredRooms = newDataRooms.filter(
+    (mRoom) =>
+      !findRoomsFull.find((fRoom) => mRoom._id.toString() === fRoom.roomId)
+  );
+  return filteredRooms;
+};
