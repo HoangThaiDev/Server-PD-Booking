@@ -12,7 +12,7 @@ const Cart = require("../model/cart");
 
 exports.postAddCart = async (req, res) => {
   const { valueFormBooking, user } = req.body;
-  console.log("valueFormBooking", valueFormBooking);
+
   const { conventStartDateInput, conventEndDateInput, isCheckDateInputValid } =
     checkDateBookingInput(valueFormBooking.startDate, valueFormBooking.endDate);
 

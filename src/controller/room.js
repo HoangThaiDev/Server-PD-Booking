@@ -234,6 +234,6 @@ exports.postCheckRoom = async (req, res) => {
       room.numberRooms.splice(findIndex, 1);
     });
   });
-  console.log(convertStartDate, convertEndDate);
+
   res.status(200).json(room);
 };
