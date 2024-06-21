@@ -15,7 +15,6 @@ const checkSession = async (req, res, next) => {
   });
 
   // Kiểm tra maxAge của session
-
   const now = new Date();
   const expires = new Date(sessionCurrent.session.cookie.expires);
 

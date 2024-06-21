@@ -23,10 +23,10 @@ const store = new MongoDBStore({
   collection: "sessions",
 });
 
-// Create Middlewares
+// Create + use Middlewares
 app.use(express.json());
 app.use(cors(corsOptions));
-app.set("trust proxy", 1);
+app.set("trust proxy", 1); // Đảm bảo thông tin IP address chính xác
 
 app.use(
   session({
@@ -44,7 +44,7 @@ app.use(
 );
 
 // Create Server DBS + Connect Server
-mongooseConnect(() => {
+const connectServerWithDbs = () => {
   if (env.BUILD_MODE === "production") {
     app.listen(process.env.PORT, (err) => {
       console.log(
@@ -58,7 +58,8 @@ mongooseConnect(() => {
       );
     });
   }
-});
+};
+mongooseConnect(connectServerWithDbs);
 
 /// Create Routes
 app.use("/users", userRouter);

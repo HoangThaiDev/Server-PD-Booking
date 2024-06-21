@@ -1,5 +1,7 @@
 // Import Modal
 const Room = require("../model/room");
+const City = require("../model/city");
+const Resort = require("../model/resort");
 const Transaction = require("../model/transaction");
 
 // Import Modules
@@ -34,7 +36,19 @@ exports.getRooms = async (req, res) => {
 };
 
 exports.getDetailRoom = async (req, res) => {
-  const { nameCity, nameResort, roomId } = req.query;
+  let { nameCity, nameResort, roomId } = req.query;
+
+  // Check nameCity & nameResort have value valid
+  if (nameCity == "undefined" || nameResort == "undefined") {
+    const resort = await Resort.findOne({ rooms: { $in: roomId } });
+    const city = await City.findOne({
+      resorts: { $in: resort._id.toString() },
+    });
+
+    // Update Field nameCity, nameResort
+    nameCity = city.name;
+    nameResort = resort.name;
+  }
 
   try {
     const room = await Room.aggregate([
