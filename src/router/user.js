@@ -24,6 +24,6 @@ router.post("/auth-email", userController.postAuthEmail);
 
 router.post("/create-newPassword", userController.postCreateNewPassword);
 
-router.get("/logout/:userId", functSession, userController.getLogout);
+router.get("/logout/:userId", userController.getLogout);
 
 module.exports = router;
